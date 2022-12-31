@@ -67,7 +67,7 @@ jobs:
     name: "Analyse Super-linter"
     runs-on: ubuntu-latest
 
-    # Le job sera exécuté après les analyses semgrep et hadolint, qu'elles renvoient ou non une erreur
+    # Si le trigger_event est un pull_request, le job sera exécuté après les analyses semgrep et hadolint, qu'elles renvoient ou non une erreur
     needs: [semgrep, hadolint]
     if :  always() && github.event_name == 'pull_request'
 
