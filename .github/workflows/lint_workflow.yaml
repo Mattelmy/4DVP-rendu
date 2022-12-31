@@ -46,7 +46,7 @@ jobs:
       - name: "Exécution Hadolint"
         uses: hadolint/hadolint-action@v2.1.0
         with:
-          dockerfile: ./super_calculator/._Dockerfile
+          dockerfile: ./super_calculator/Dockerfile
           format: sarif
           output-file: hadolint-results.sarif
       
