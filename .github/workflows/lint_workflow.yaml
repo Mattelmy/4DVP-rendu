@@ -14,6 +14,7 @@ jobs:
     container:
       image: returntocorp/semgrep:1.1.0
     
+    # Le job ne peut pas être éxécuté par dependabot
     if: (github.actor != 'dependabot[bot]')
 
     steps:
@@ -21,9 +22,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Exécution Semgrep"
-        #Analyse du code, qui renvoie un fichier SARIF avec les résultats
+        # Analyse du code, qui renvoie un fichier SARIF avec les résultats
         run: semgrep ci --sarif --output=semgrep.sarif
-        #Définition des règles à suivre pour l'analyse
+        # Définition des règles à suivre pour l'analyse
         env:
           SEMGREP_RULES: p/default
       
@@ -38,7 +39,11 @@ jobs:
   hadolint:
     name: "Analyse Hadolint"
     runs-on: ubuntu-latest
-    
+
+    # Le job sera exécuté après l'analyse semgrep, qu'elle renvoie ou non une erreur
+    needs: semgrep
+    if :  always()
+
     steps:
       - name: "Checkout"
         uses: actions/checkout@v3
@@ -56,3 +61,22 @@ jobs:
         if: always()
         with:
           sarif_file: hadolint-results.sarif
+  
+
+  super-linter:
+    name: "Analyse Super-linter"
+    runs-on: ubuntu-latest
+
+    # Le job sera exécuté après les analyses semgrep et hadolint, qu'elles renvoient ou non une erreur
+    needs: [semgrep, hadolint]
+    if :  always()
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+        
+      - name: "Exécution super-linter"
+        uses: github/super-linter/slim@v4
+        env :
+          VALIDATE_ALL_CODEBASE: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
