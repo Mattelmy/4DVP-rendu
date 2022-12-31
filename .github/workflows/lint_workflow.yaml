@@ -21,12 +21,38 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Exécution Semgrep"
+        #Analyse du code, qui renvoie un fichier SARIF avec les résultats
         run: semgrep ci --sarif --output=semgrep.sarif
+        #Définition des règles à suivre pour l'analyse
         env:
           SEMGREP_RULES: p/default
       
       - name: "Envoie du fichier SARIF via CodeQL"
         uses: github/codeql-action/upload-sarif@v2
+        # Exécution du step même si le step précédent renvoie une erreur (problème trouvé d'après les règles définies)
         if: always()
         with:
           sarif_file: semgrep.sarif
+  
+
+  hadolint:
+    name: "Analyse Hadolint"
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+      
+      - name: "Exécution Hadolint"
+        uses: hadolint/hadolint-action@v2.1.0
+        with:
+          dockerfile: ./super_calculator/._Dockerfile
+          format: sarif
+          output-file: hadolint-results.sarif
+      
+      - name : "Envoie du fichier SARIF via CodeQL"
+        uses: github/codeql-action/upload-sarif@v2
+        # Exécution du step même si le step précédent renvoie une erreur (problème trouvé d'après les règles définies)
+        if: always()
+        with:
+          sarif_file: hadolint-results.sarif
