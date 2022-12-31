@@ -69,7 +69,7 @@ jobs:
 
     # Le job sera exécuté après les analyses semgrep et hadolint, qu'elles renvoient ou non une erreur
     needs: [semgrep, hadolint]
-    if :  always()
+    if :  github.event_name == 'pull_request'
 
     steps:
       - name: "Checkout"
