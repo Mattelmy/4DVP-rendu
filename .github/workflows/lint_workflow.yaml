@@ -9,6 +9,7 @@ jobs:
   semgrep:
     name: "Analyse Semgrep"
     runs-on: ubuntu-latest
+    # Définition des permissions et de l'image de conteneur nécessaires
     permissions:
       security-events: write
     container:

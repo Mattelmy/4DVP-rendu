@@ -12,6 +12,9 @@ jobs:
       matrix:
         version: ["1.17", "1.18", "1.19"]
     
+    # Le job ne peut pas être éxécuté par dependabot
+    if: (github.actor != 'dependabot[bot]')
+
     steps:
       - name: "Checkout"
         uses: actions/checkout@v3
@@ -23,4 +26,11 @@ jobs:
           cache: true
 
       - name: "Réalisation des tests"
-        run: go test ./...
+        run: go test ./... -json > GoTestResults_${{ matrix.version }}.json
+
+      - name: "Publication des résultats en tant qu'artéfact"
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name : "Go Test Results - ${{ matrix.version }}"
+          path : GoTestResults_${{ matrix.version }}.json
