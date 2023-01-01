@@ -19,9 +19,9 @@ jobs:
       - name: "Setup de Go"
         uses: actions/setup-go@v3
         with:
-          go-version: ${{matrix.version}}
+          go-version: "${{matrix.version}}"
       
-      - name: "Installatino des dépendances"
+      - name: "Installation des dépendances"
         run: go get .
 
       - name: "Réalisation des tests"
