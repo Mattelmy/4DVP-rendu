@@ -1,0 +1,35 @@
+name: "Release workflow"
+
+on:
+  create:
+  push:
+
+jobs:
+  release:
+    name: "Go release"
+    runs-on: ubuntu-latest
+
+    # Le job ne peut pas être éxécuté par dependabot
+    if: (github.actor != 'dependabot[bot]')
+  
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+      
+      - name: "Setup de Go"
+        uses: actions/setup-go@v3
+      
+      - name: "Exécution de goreleaser"
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: "Publication d'artéfact"
+        uses: actions/upload-artifact@v3
+        with:
+          name : "Artéfact relase"
+          path : ./dist/*
