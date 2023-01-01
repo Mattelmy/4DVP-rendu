@@ -1,14 +1,12 @@
 name: "Release workflow"
 
 on:
-  create:
   push:
-    tags:
-      - '*'
-  #test
+    tags:        
+        - '*'   
 
 jobs:
-  release:
+  gorelease:
     name: "Go release"
     runs-on: ubuntu-latest
 
@@ -36,5 +34,21 @@ jobs:
       - name: "Publication d'artéfact"
         uses: actions/upload-artifact@v3
         with:
-          name : "Artéfact relase"
+          name : "Artéfact release"
           path : ./dist/*
+  
+
+  publish_docker:
+    name: "Publication d'image Docker"
+
+    # Le job sera exécuté après l'utilisation de goreleaser, qu'elle renvoie ou non une erreur
+    needs: gorelease
+    if : always()
+
+    uses: ./.github/workflows/publish_docker_image.yaml
+    with :
+      repository: mattelmy/super_calculator
+      tag: v0.1
+    secrets:
+      username: ${{secrets.DOCKERHUB_USERNAME}}
+      token: ${{secrets.DOCKERHUB_TOKEN}}

@@ -1,0 +1,61 @@
+name: "Publication et scan de sécurité d'image Docker"
+on: 
+  workflow_call:
+
+    inputs:
+      repository:
+        type: string
+        required: true
+        description: "Répertoire de stockage de l'image"
+      tag:
+        type: string
+        required: true
+        description: "Tag de l'image"
+    
+    secrets:
+      username:
+        required: true
+        description: "Nom d'utilisateur sur Docker Hub"
+      token:
+        required: true
+        description: "Token d'identification sur Docker Hub"
+
+jobs:
+  docker_publish:
+    name: "Publication et scan Trivy"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name : "Installation des dépendances Docker"
+        uses: docker/setup-buildx-action@v2
+
+      - name: "Connexion au Docker Hub"
+        # Utilisation des identifiants de connexion fournis en inputs
+        uses: docker/login-action@v2
+        with:
+          username: ${{secrets.username}}
+          password: ${{secrets.token}}
+
+      - name: "Construction et publication d'image"
+        uses: docker/build-push-action@v3
+        # Utilisation du dossier et tags fournis en inputs pour définir l'emplacement de stockage de l'image
+        with:
+          push: true
+          tags: ${{ inputs.repository }}:${{ inputs.tag }}
+
+      - name: "Scan de sécurité via Trivy de l'image publiée"
+        uses: aquasecurity/trivy-action@0.8.0
+        with:
+          # Définition de l'image à scanner, ainsi que du fichier contenant les résultats
+          image-ref: ${{ inputs.repository }}:${{ inputs.tag }}
+          format: sarif
+          output: trivy-results.sarif
+
+      - name: "Publication du fichier de résultats via CodeQL"
+        uses: github/codeql-action/upload-sarif@v2
+        # Exécution du step même si le step précédent renvoie une erreur (problème trouvé durant le scan)
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
