@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: "${{matrix.version}}"
-
+          cache: true
 
       - name: "Réalisation des tests"
         run: go test ./super_calculator/...
