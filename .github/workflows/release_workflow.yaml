@@ -3,6 +3,8 @@ name: "Release workflow"
 on:
   create:
   push:
+    tags:
+      - '*'
 
 jobs:
   release:
