@@ -1,0 +1,25 @@
+name : "Test workflow"
+
+on:
+  push:
+
+jobs:
+  testing:
+    name: "Go testing"
+    runs-on: ubuntu-latest
+    # Définition de la matrice pour pouvoir tester toutes les versions demandées
+    strategy:
+      matrix:
+        version: ["1.17", "1.18", "1.19"]
+    
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+      
+      - name: "Setup de Go"
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{matrix.version}}
+      
+      - name: "Réalisation des tests"
+        run: go test ./...
