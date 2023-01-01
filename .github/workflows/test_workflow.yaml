@@ -21,5 +21,8 @@ jobs:
         with:
           go-version: ${{matrix.version}}
       
+      - name: "Installatino des dépendances"
+        run: go get .
+
       - name: "Réalisation des tests"
         run: go test ./...
