@@ -45,10 +45,12 @@ jobs:
     needs: gorelease
     if : always()
 
+    # Utilisation d'un autre workflow pour la publication d'image et le scan de sécurité
     uses: ./.github/workflows/publish_docker_image.yaml
     with :
       repository: mattelmy/super_calculator
-      tag: v0.1
+      # Définition du tag comme étant celui de la release sur Github
+      tag: ${{ github.ref_name }}
     secrets:
-      username: ${{secrets.DOCKERHUB_USERNAME}}
-      token: ${{secrets.DOCKERHUB_TOKEN}}
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      token: ${{ secrets.DOCKERHUB_TOKEN }}

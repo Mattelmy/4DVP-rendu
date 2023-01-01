@@ -35,8 +35,8 @@ jobs:
         # Utilisation des identifiants de connexion fournis en inputs
         uses: docker/login-action@v2
         with:
-          username: ${{secrets.username}}
-          password: ${{secrets.token}}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.token }}
 
       - name: "Construction et publication d'image"
         uses: docker/build-push-action@v3
