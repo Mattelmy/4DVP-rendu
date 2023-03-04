@@ -1,3 +1,3 @@
 # Worflow tests
 
-This repository is made for testing workflows, in a pre-configured go testing environnement.
+This repository is made for testing workflows, in a pre-configured go environnement.
